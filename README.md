@@ -46,7 +46,7 @@ To tryout test stub, open another terminal tab and run:
 
 ### Python
 ```
-python3 ./server/src/stub.py
+python3 ./client-python/src/client.py
 ```
 
 ## Client Flags
