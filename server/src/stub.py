@@ -16,6 +16,7 @@ stub = meu_qoelho_mq_pb2_grpc.MeuQoelhoMqStub(channel)
 # res = stub.listQueues(meu_qoelho_mq_pb2.Empty())
 # print(res.queues)
 
-response_stream = stub.signToQueues(meu_qoelho_mq_pb2.SignToQueuesRequest(queuesNames=["test0"]))
+response_stream = stub.signToQueues(meu_qoelho_mq_pb2.SignToQueuesRequest(queuesNames=["test0", "test3"]))
+
 for response in response_stream:
   print(response)

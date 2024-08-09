@@ -33,7 +33,7 @@ class QueueService:
         print(queue.type)
         match queue.type:
           case QueueType.SIMPLE:
-            sub = random.choice(queue.subscribers)
+            sub = random.choice(queue.subscribers) # TODO use another algorithm
             print("queue " + queue.name + " notified " + sub.ip)
             thread = threading.Thread(target=sub.receive_message, kwargs={"message":message})
             thread.start()
@@ -42,7 +42,17 @@ class QueueService:
               print("queue " + queue.name + " notified " + sub.ip)
               thread = threading.Thread(target=sub.receive_message, kwargs={"message":message})
               thread.start()
-      sleep(5) # TODO define this timeout
+      sleep(5)
+
+  def unsub(self, sub_ip: str, queues_names: List[str]):
+    print(sub_ip)
+    queues: list[Queue] = [self.queues_map.get(q) for q in queues_names]
+
+    for queue in queues:
+      queue.subscribers = [sub for sub in queue.subscribers if sub.ip != sub_ip]
+
+    self.db.update_queues(self.queues_map)
+    print("disconected")
 
   def add_queue(self, name: str, type: QueueType) -> Queue:
 
@@ -93,7 +103,7 @@ class QueueService:
     for name in queues_names:
       queue = self.queues_map.get(name)
       if (queue != None):
-        print("subscribed to " + queue.name)
+        print("subscribed " + ip + " to " + queue.name)
         queue.subscribe(sub)
 
     self.db.update_queues(self.queues_map)

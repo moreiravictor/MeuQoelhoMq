@@ -41,9 +41,12 @@ class MeuQoelhoMqServicer(meu_qoelho_mq_pb2_grpc.MeuQoelhoMqServicer):
 
   # TODO erase sub when disconnected
   def signToQueues(self, request, context):
+    ip = context.peer()
+    context.add_callback(lambda: self.service.unsub(ip, request.queuesNames))
+
     try:
       print("received request to sign to queues")
-      return self.service.sign_to_queues(ip=context.peer(), queues_names=request.queuesNames)
+      return self.service.sign_to_queues(ip=ip, queues_names=request.queuesNames)
     except grpc.RpcError as e:
       print(f"RPC Error: {e}")
 

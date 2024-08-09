@@ -1,1 +1,1 @@
-{"test3": {"name": "test3", "type": 2, "messages": [], "subscribers": [{"ip": "ipv6:%5B::1%5D:55896", "current_message": null}]}, "test0": {"name": "test0", "type": 2, "messages": [], "subscribers": [{"ip": "ipv6:%5B::1%5D:33976", "current_message": null}]}}
+{"test3": {"name": "test3", "type": 2, "messages": [], "subscribers": []}, "test0": {"name": "test0", "type": 2, "messages": [], "subscribers": []}}

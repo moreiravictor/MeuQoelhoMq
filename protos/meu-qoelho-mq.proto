@@ -48,5 +48,5 @@ service MeuQoelhoMq {
   rpc removeQueue(RemoveQueueRequest) returns (Empty) {}
   rpc listQueues(Empty) returns (ListQueueResponse) {}
   rpc publishMessage(PublishMessageRequest) returns (Empty) {} // TODO implement publish many messages
-  rpc signToQueues(SignToQueuesRequest) returns (stream SignToQueuesResponse) {} // TODO implement unary approach
+  rpc signToQueues(SignToQueuesRequest) returns (stream SignToQueuesResponse) {} // TODO implement unary approach, oferecer timeout
 }
