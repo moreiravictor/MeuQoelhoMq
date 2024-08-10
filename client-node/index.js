@@ -105,7 +105,7 @@ switch (args._[0]) {
         return;
       }
 
-      console.log('message published:', response);
+      console.log('messages published!');
     });
     break;
   case 'remove': 
