@@ -19,6 +19,27 @@ var client = new stub.MeuQoelhoMq('localhost:50051',
 var types = ['SIMPLE', 'MULTIPLE'];
 
 var args = minimist(process.argv.slice(2));
+
+if (args?.help || args?.h) {
+  console.log(`
+    Usage: node ./client-node/index.js [-h] {create,publish,list,remove,sign}
+
+    Client Node for Meu QoelhoMQ
+
+    positional arguments:
+      {create,publish,list,remove,sign}
+      create                Create a new queue
+      publish               Publish messages to a queue
+      list                  List all queues
+      remove                Remove a queue
+      sign                  Sign to one or more queues
+    
+    options:
+      -h, --help
+    `);
+  return;
+}
+
 switch (args._[0]) {
   case 'create': 
     var name = args.name;
@@ -56,26 +77,29 @@ switch (args._[0]) {
     break;
   case 'publish': 
     var name = args.name;
-    var message = args.message;
+    var messages = args.messages;
 
     if (!name) {
       console.error('name param is required')
       return;
     }
 
-    if (!message) {
-      console.error('message param is required')
+    if (!messages) {
+      console.error('messages param is required')
       return;
     }
 
+    var mappedMessages = messages.split(",").map(m => ({
+      text_message: m // or use `bytes_message` for sending bytes
+    }));
+
+
     var req = {
       queueName: name,
-      message: {
-        text_message: message // or use `bytes_message` for sending bytes
-      }
+      messages: mappedMessages
     };
       
-    client.publishMessage(req, function(err, response) {
+    client.publishMessages(req, function(err, response) {
       if (err) {
         console.error('error publishing message:', err);
         return;
@@ -86,7 +110,6 @@ switch (args._[0]) {
     break;
   case 'remove': 
     var name = args.name;
-    var message = args.message;
 
     if (!name) {
       console.error('name param is required')
