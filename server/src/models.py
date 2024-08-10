@@ -6,7 +6,15 @@ class QueueType(Enum):
   SIMPLE = 1
   MULTIPLE = 2
 
-Message = str | bytes
+class MessageType(Enum):
+   STRING = 1
+   BYTE = 2
+
+@dataclass
+class Message:
+   type: MessageType
+   origin_queue: str
+   content: str | bytes
 
 @dataclass
 class Subscriber:

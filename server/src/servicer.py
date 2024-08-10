@@ -18,12 +18,12 @@ class MeuQoelhoMqServicer(meu_qoelho_mq_pb2_grpc.MeuQoelhoMqServicer):
     return meu_qoelho_mq_pb2.Queue(name = created_queue.name, type = request.type)
 
 
-  def publishMessage(self, request, context):
+  def publishMessages(self, request, context):
     print("received request to publish a message to queue " + request.queueName)
 
-    create_queue_request = meu_qoelho_mq_pb2.PublishMessageRequest(message = request.message, queueName = request.queueName)
+    create_queue_request = meu_qoelho_mq_pb2.PublishMessagesRequest(messages = request.messages, queueName = request.queueName)
 
-    self.service.publish_message(create_queue_request)
+    self.service.publish_messages(create_queue_request)
 
     return meu_qoelho_mq_pb2.Empty()
 
@@ -39,13 +39,22 @@ class MeuQoelhoMqServicer(meu_qoelho_mq_pb2_grpc.MeuQoelhoMqServicer):
     print("received request to list queues")
     return meu_qoelho_mq_pb2.ListQueueResponse(queues=self.service.list())
 
-  # TODO erase sub when disconnected
   def signToQueues(self, request, context):
+    ip = context.peer()
+    context.add_callback(lambda: self.service.unsub(ip, request.queuesNames))
+
     try:
       print("received request to sign to queues")
-      return self.service.sign_to_queues(ip=context.peer(), queues_names=request.queuesNames)
+      return self.service.sign_to_queues(ip=ip, queues_names=request.queuesNames)
     except grpc.RpcError as e:
       print(f"RPC Error: {e}")
+
+  def consumeMessageFromQueue(self, request, context):
+    print("received request to consume message from queue")
+    ip = context.peer()
+    context.add_callback(lambda: self.service.unsub(ip, request.queuesNames))
+    print("received request to consume message")
+    return self.service.consume_message(ip=ip, queue=request.queueName)
 
 
 
