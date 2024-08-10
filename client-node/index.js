@@ -47,11 +47,11 @@ switch (args._[0]) {
       
     client.createQueue(req, function(err, response) {
       if (err) {
-        console.error('Error creating queue:', err);
+        console.error('error creating queue:', err);
         return;
       }
 
-      console.log('Queue created successfully:', response);
+      console.log('queue created successfully:', response);
     });
     break;
   case 'publish': 
@@ -99,11 +99,11 @@ switch (args._[0]) {
       
     client.removeQueue(req, function(err, response) {
       if (err) {
-        console.error('error delete queue:', err);
+        console.error('error remove queue:', err);
         return;
       }
 
-      console.log('queue deleted:', response);
+      console.log('queue removed:', response);
     });
     break;
   case 'list': 

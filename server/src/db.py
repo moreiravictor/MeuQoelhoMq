@@ -5,6 +5,9 @@ import os
 from dataclasses import asdict, is_dataclass
 import enum
 
+# Check if the environment variable TEST_MODE is set to "true"
+test_mode = os.getenv("TEST_MODE", "false").lower() == "true"
+db_path = "../../tests/helpers/db.json" if test_mode else  "./db.json"
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -16,10 +19,12 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 class DB:
   dirname = os.path.dirname(__file__)
-  file_path = os.path.join(dirname, "./db.json")
+  file_path = os.path.join(dirname, db_path)
 
   def __init__(self):
     try:
+      print("db:::", db_path)
+      print("test_mode:::", test_mode)
       open(self.file_path, "r")
       print("connected to db successfully")
     except:

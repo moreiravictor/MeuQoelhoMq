@@ -72,18 +72,24 @@ Publish a message to queue
 node ./client-node/index.js publish --name=channel1 --message=abc
 ```
 
-Remove queue
-
-```
-node ./client-node/index.js remove --name=channel1
-```
-
 List queues
 ```
 node ./client-node/index.js list
 ```
 
+Remove queue
+```
+node ./client-node/index.js remove --name=channel1
+```
+
 Sign queues
 ```
 node ./client-node/index.js sign --name=channel1,test0
+```
+
+
+### Run tests
+
+```
+./test.sh
 ```

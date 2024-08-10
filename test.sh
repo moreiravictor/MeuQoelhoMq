@@ -1,13 +1,16 @@
-#!/bin/bash
+# Start the server script in the background and capture its output in a variable
+export TEST_MODE=true
 
-# Navigate to the directory containing the requirements.txt file
+server_startup_max_wait_time=20
+db_path="./tests/helpers/db.json"
 
-python3 ./server/src/server.py &
+# helpers to log and run server
+source ./tests/helpers/logger.sh
+source ./tests/helpers/run_server.sh
 
-sleep 10
+# Node tests
+source ./tests/node.sh
 
-python3 ./server/src/stub2.py &
+reset_db
 
-sleep 5
-
-echo "All tasks completed successfully."
+log_success "aaAll tasks completed successfully."
