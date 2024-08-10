@@ -66,10 +66,10 @@ Create a queue
 node ./client-node/index.js create --name=channel1 --type=SIMPLE
 ```
 
-Publish a message to queue
+Publish messages to queue
 
 ```
-node ./client-node/index.js publish --name=channel1 --message=abc
+node ./client-node/index.js publish --name=channel1 --messages=abc,xyz
 ```
 
 List queues

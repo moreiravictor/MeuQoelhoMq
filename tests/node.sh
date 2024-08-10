@@ -20,7 +20,7 @@ node_tests() {
     }
 
     publish() {
-        node ./client-node/index.js publish --name=testchannel --message=abc > "$output_stub" 2>&1 &
+        node ./client-node/index.js publish --name=testchannel --messages=abc,xyz > "$output_stub" 2>&1 &
         STUB_PID=$!
 
         if wait_for_output_with_timeout "$output_stub" "message published" "$max_wait_time"; then
