@@ -1,5 +1,5 @@
 from db import DB
-from models import Queue, QueueType, Subscriber
+from models import Queue, QueueType, Subscriber, Message, MessageType
 import random
 from typing import Dict, List
 import threading
@@ -26,14 +26,13 @@ class QueueService:
     print("starting queue " + queue.name)
 
     while(True):
-      if (len(queue.messages)):
-        print("message received on queue")
+      if (len(queue.messages) and len(queue.subscribers)):
+        print("message received on queue" + queue.name)
         message = queue.messages.pop()
         self.db.update_queues(self.queues_map)
-        print(queue.type)
         match queue.type:
           case QueueType.SIMPLE:
-            sub = random.choice(queue.subscribers) # TODO use another algorithm
+            sub = random.choice(queue.subscribers)
             print("queue " + queue.name + " notified " + sub.ip)
             thread = threading.Thread(target=sub.receive_message, kwargs={"message":message})
             thread.start()
@@ -42,17 +41,22 @@ class QueueService:
               print("queue " + queue.name + " notified " + sub.ip)
               thread = threading.Thread(target=sub.receive_message, kwargs={"message":message})
               thread.start()
-      sleep(5)
+      sleep(1)
 
   def unsub(self, sub_ip: str, queues_names: List[str]):
-    print(sub_ip)
     queues: list[Queue] = [self.queues_map.get(q) for q in queues_names]
 
     for queue in queues:
       queue.subscribers = [sub for sub in queue.subscribers if sub.ip != sub_ip]
 
     self.db.update_queues(self.queues_map)
-    print("disconected")
+    print("disconected sub" + sub_ip)
+
+  def clear_subs(self):
+    for queue_name in self.queues_map.keys():
+      self.queues_map[queue_name].subscribers = []
+
+    self.db.update_queues(self.queues_map)
 
   def add_queue(self, name: str, type: QueueType) -> Queue:
 
@@ -70,16 +74,19 @@ class QueueService:
     print("queue already created")
     raise Exception("queue already created")
 
-  def publish_message(self, request: meu_qoelho_mq_pb2.PublishMessageRequest):
+  def publish_messages(self, request: meu_qoelho_mq_pb2.PublishMessagesRequest):
     queue = self.queues_map.get(request.queueName)
 
     if (queue == None):
       print("tried to publish message to queue that does not exist")
       raise Exception("queue does not exist")
 
-    message = request.message.text_message or request.message.bytes_message
+    messages: List[Message] = [
+        Message(content=message.text_message, type=MessageType.STRING, origin_queue=queue.name) if message.text_message
+        else Message(content=message.bytes_message, type=MessageType.BYTE, origin_queue=queue.name) for message in request.messages
+      ]
 
-    queue.messages.append(message)
+    queue.messages.extend(messages)
 
     self.db.update_queues(self.queues_map)
     print("published message successfully")
@@ -111,12 +118,21 @@ class QueueService:
     while (True):
       if (sub.current_message != None):
         print("received message")
-        message = meu_qoelho_mq_pb2.MessageType(text_message=sub.current_message) if isinstance(sub.current_message, str) else meu_qoelho_mq_pb2.MessageType(bytes_message==sub.current_message)
+        content = sub.current_message.content
+        queue = sub.current_message.origin_queue
+        message = meu_qoelho_mq_pb2.MessageType(text_message=content) if sub.current_message.type == MessageType.STRING else meu_qoelho_mq_pb2.MessageType(bytes_message=content)
         response = meu_qoelho_mq_pb2.SignToQueuesResponse(
           message=message,
-          queueName= "mocked_queue_name"
+          queueName= queue
         )
 
         yield response
 
         sub.current_message = None
+
+  def consume_message(self, ip: str, queue: str) -> meu_qoelho_mq_pb2.ConsumeMessageResponse:
+    generator = self.sign_to_queues(ip, [queue])
+    res = next(generator)
+    print(res)
+    self.unsub(ip, [queue])
+    return meu_qoelho_mq_pb2.ConsumeMessageResponse(response=res.message)

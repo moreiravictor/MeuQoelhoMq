@@ -27,9 +27,9 @@ message MessageType {
   }
 }
 
-message PublishMessageRequest {
+message PublishMessagesRequest {
   string queueName = 1;
-  MessageType message = 2;
+  repeated MessageType messages = 2;
 }
 
 message SignToQueuesRequest {
@@ -41,12 +41,21 @@ message SignToQueuesResponse {
   MessageType message = 2;
 }
 
+message ConsumeMessageRequest {
+  string queueName = 1;
+}
+
+message ConsumeMessageResponse {
+  MessageType response = 1;
+}
+
 message Empty {}
 
 service MeuQoelhoMq {
   rpc createQueue(Queue) returns (Queue) {}
   rpc removeQueue(RemoveQueueRequest) returns (Empty) {}
   rpc listQueues(Empty) returns (ListQueueResponse) {}
-  rpc publishMessage(PublishMessageRequest) returns (Empty) {} // TODO implement publish many messages
-  rpc signToQueues(SignToQueuesRequest) returns (stream SignToQueuesResponse) {} // TODO implement unary approach, oferecer timeout
+  rpc publishMessages(PublishMessagesRequest) returns (Empty) {}
+  rpc signToQueues(SignToQueuesRequest) returns (stream SignToQueuesResponse) {}
+  rpc consumeMessageFromQueue(ConsumeMessageRequest) returns (ConsumeMessageResponse) {}
 }

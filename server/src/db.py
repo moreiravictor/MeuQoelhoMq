@@ -1,5 +1,5 @@
 from typing import Dict, List
-from models import Queue, Subscriber, QueueType
+from models import Queue, Subscriber, QueueType, Message, MessageType
 import json
 import os
 from dataclasses import asdict, is_dataclass
@@ -12,6 +12,8 @@ class CustomJSONEncoder(json.JSONEncoder):
             return asdict(obj)
         if isinstance(obj, enum.Enum):
             return obj.value
+        if isinstance(obj, bytes):
+            return obj.decode()
         return super().default(obj)
 
 class DB:
@@ -25,13 +27,26 @@ class DB:
     except:
       print("failed to connect to db")
 
-  def __from_json_to_subscriber(self, data: dict) -> Subscriber:
-    return Subscriber(ip=data['ip'], current_message=data['current_message'])
+  def __from_json_to_subscribers(self, datas: list[dict]) -> list[Subscriber]:
+    return [Subscriber(ip=data['ip'], current_message=data['current_message']) for data in datas]
+
+  def __from_json_to_messages(self, datas: list[dict]) -> list[Message]:
+      parsed_messages = []
+
+      for data in datas:
+        type = MessageType(data["type"])
+        content = bytes(data["content"], "utf-8") if type == MessageType.BYTE else data["content"]
+        parsed_messages.append(Message(content=content, origin_queue=data["origin_queue"], type=type))
+
+      return parsed_messages
 
   def __from_json_to_queue(self, data: dict) -> Queue:
-    subscribers: List[Subscriber] = [self.__from_json_to_subscriber(sub) for sub in data["subscribers"]]
-    queue_type = QueueType(data["type"])
-    return Queue(name=data["name"], type=queue_type, messages=data['messages'], subscribers=subscribers)
+    return Queue(
+      name=data["name"],
+      type=QueueType(data["type"]),
+      messages=self.__from_json_to_messages(data['messages']),
+      subscribers=self.__from_json_to_subscribers(data["subscribers"])
+      )
 
   def find_queues(self) -> Dict[str, Queue]:
     file = open(self.file_path, "r").read()
