@@ -60,29 +60,34 @@ python3 ./client-python/src/client.py
 
 ### Node examples
 
-Create a queue
+Help commad
+
+```
+node ./client-node/index.js --help
+```
+
+Create a new queue
 
 ```
 node ./client-node/index.js create --name=channel1 --type=SIMPLE
 ```
 
-Publish messages to queue
-
+Publish messages to a queue
 ```
 node ./client-node/index.js publish --name=channel1 --messages=abc,xyz
 ```
 
-List queues
+List all queues
 ```
 node ./client-node/index.js list
 ```
 
-Remove queue
+Remove a queue
 ```
 node ./client-node/index.js remove --name=channel1
 ```
 
-Sign queues
+Sign to one or more queues
 ```
 node ./client-node/index.js sign --name=channel1,test0
 ```

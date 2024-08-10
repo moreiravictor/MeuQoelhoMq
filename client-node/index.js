@@ -19,6 +19,27 @@ var client = new stub.MeuQoelhoMq('localhost:50051',
 var types = ['SIMPLE', 'MULTIPLE'];
 
 var args = minimist(process.argv.slice(2));
+
+if (args?.help || args?.h) {
+  console.log(`
+    Usage: node ./client-node/index.js [-h] {create,publish,list,remove,sign}
+
+    Client Node for Meu QoelhoMQ
+
+    positional arguments:
+      {create,publish,list,remove,sign}
+      create                Create a new queue
+      publish               Publish messages to a queue
+      list                  List all queues
+      remove                Remove a queue
+      sign                  Sign to one or more queues
+    
+    options:
+      -h, --help
+    `);
+  return;
+}
+
 switch (args._[0]) {
   case 'create': 
     var name = args.name;
