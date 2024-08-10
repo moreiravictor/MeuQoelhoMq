@@ -42,9 +42,11 @@ start_server() {
   SERVER_PID=$!
 
   if ! wait_for_output_with_timeout "$output_server" "running server" "$server_startup_max_wait_time" "$callback"; then
-    echo "Failed to start server"
+    cat $output_server
     rm "$output_server"
     reset_db
+    log_error "Failed to start server"
+    kill $SERVER_PID
     exit 1
   fi
 

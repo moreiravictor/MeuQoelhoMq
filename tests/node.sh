@@ -1,5 +1,5 @@
 #!/bin/bash
-node_create_and_publish() {
+node_tests() {
     local output_stub=$(mktemp)
     local max_wait_time=5
 
@@ -84,4 +84,4 @@ node_create_and_publish() {
     start_server cb
 }
 
-node_create_and_publish
+node_tests
