@@ -133,6 +133,5 @@ class QueueService:
   def consume_message(self, ip: str, queue: str) -> meu_qoelho_mq_pb2.ConsumeMessageResponse:
     generator = self.sign_to_queues(ip, [queue])
     res = next(generator)
-    print(res)
     self.unsub(ip, [queue])
     return meu_qoelho_mq_pb2.ConsumeMessageResponse(response=res.message)
