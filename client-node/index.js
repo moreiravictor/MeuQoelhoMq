@@ -105,7 +105,7 @@ switch (args._[0]) {
         return;
       }
 
-      console.log('messages published!');
+      console.log('messages published');
     });
     break;
   case 'remove': 
@@ -126,7 +126,7 @@ switch (args._[0]) {
         return;
       }
 
-      console.log('queue removed:', response);
+      console.log('queue removed');
     });
     break;
   case 'list': 

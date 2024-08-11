@@ -89,7 +89,7 @@ node ./client-node/index.js remove --name=channel1
 
 Sign to one or more queues
 ```
-node ./client-node/index.js sign --name=channel1,test0
+node ./client-node/index.js sign --names=channel1,test0
 ```
 
 ### Python examples
@@ -130,6 +130,7 @@ python3 ./client-python/src/client.py sign --name=channel1,test0
 
 ### Run tests
 
+First stop all the running services to not generate inconsistences. The run:
 ```
 ./test.sh
 ```
