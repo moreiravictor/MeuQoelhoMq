@@ -92,6 +92,41 @@ Sign to one or more queues
 node ./client-node/index.js sign --name=channel1,test0
 ```
 
+### Python examples
+
+Help commad
+
+```
+python3 ./client-python/src/client.py --help list all arguments available
+```
+
+Create a queue
+
+```
+python3 ./client-python/src/client.py create --name=channel1 --type=SIMPLE
+```
+
+Publish a message to queue
+
+```
+python3 ./client-python/src/client.py publish --name=channel1 --message=abc
+```
+
+List queues
+```
+python3 ./client-python/src/client.py list
+```
+
+Remove queue
+```
+python3 ./client-python/src/client.py remove --name=channel1
+```
+
+Sign queues
+```
+python3 ./client-python/src/client.py sign --name=channel1,test0
+```
+
 
 ### Run tests
 
